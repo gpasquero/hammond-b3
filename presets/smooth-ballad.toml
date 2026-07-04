@@ -1,0 +1,22 @@
+name = "Smooth Ballad"
+drawbars = [
+    8,
+    6,
+    8,
+    4,
+    0,
+    0,
+    0,
+    0,
+    0,
+]
+vibrato = "c2"
+leslie = "slow"
+overdrive = 0.05000000074505806
+volume = 0.75
+
+[percussion]
+on = true
+soft = true
+fast = false
+third = true

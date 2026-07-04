@@ -1,0 +1,22 @@
+name = "Gospel Shout"
+drawbars = [
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+]
+vibrato = "c3"
+leslie = "fast"
+overdrive = 0.4000000059604645
+volume = 0.800000011920929
+
+[percussion]
+on = true
+soft = false
+fast = false
+third = false

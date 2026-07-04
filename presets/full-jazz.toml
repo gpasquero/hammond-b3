@@ -1,0 +1,22 @@
+name = "Full Jazz"
+drawbars = [
+    8,
+    8,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+]
+vibrato = "c3"
+leslie = "slow"
+overdrive = 0.10000000149011612
+volume = 0.800000011920929
+
+[percussion]
+on = true
+soft = false
+fast = true
+third = true

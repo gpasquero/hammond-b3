@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Hammond B3 · Rust WebAssembly organ</title>
+    <meta name="description"
+        content="A virtual Hammond B3 tonewheel organ with drawbars, Leslie rotary speaker, percussion and vibrato — written in Rust, running in your browser via WebAssembly." />
+
+    <!-- Trunk: compile this crate to wasm with the `web` feature only. -->
+    <link data-trunk rel="rust" data-wasm-opt="2" data-cargo-no-default-features
+        data-cargo-features="web" />
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            background: #2a1a0e;
+            overflow: hidden;
+        }
+
+        #organ {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b8933f;
+            font-family: system-ui, sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading">Loading the organ…</div>
+    <canvas id="organ"></canvas>
+    <script>
+        // Hide the loading text once the canvas has painted.
+        const obs = new MutationObserver(() => {
+            const el = document.getElementById("loading");
+            if (el) el.remove();
+        });
+        obs.observe(document.getElementById("organ"), { attributes: true });
+    </script>
+</body>
+
+</html>

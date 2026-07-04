@@ -1,0 +1,56 @@
+[package]
+name = "hammond-b3"
+version = "0.1.0"
+edition = "2021"
+description = "A virtual Hammond B3 tonewheel organ synthesizer in Rust — drawbars, Leslie rotary speaker, percussion, vibrato/chorus and presets. Native + WebAssembly demo."
+authors = ["gpasquero"]
+license = "MIT"
+repository = "https://github.com/gpasquero/hammond-b3"
+homepage = "https://github.com/gpasquero/hammond-b3"
+keywords = ["hammond", "organ", "synthesizer", "audio", "dsp"]
+categories = ["multimedia::audio", "simulation", "wasm"]
+readme = "README.md"
+
+[lib]
+name = "hammond_b3"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "hammond-b3"
+path = "src/main.rs"
+required-features = ["desktop"]
+
+[features]
+default = ["desktop"]
+gui = ["dep:eframe", "dep:egui"]
+audio = ["dep:cpal"]
+# Desktop app: real-time audio (cpal), MIDI input (midir) and native GUI (eframe).
+desktop = ["gui", "audio", "dep:midir", "dep:tracing-subscriber"]
+# Web demo (wasm32): egui/eframe + cpal WebAudio backend + on-screen keyboard.
+web = ["gui", "audio", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:console_error_panic_hook"]
+
+[dependencies]
+# --- Core engine (pure DSP, always available, wasm-friendly) ---
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+tracing = "0.1"
+
+# --- GUI + audio (shared by desktop and web) ---
+cpal = { version = "0.15", optional = true }
+eframe = { version = "0.29", optional = true, default-features = false, features = ["default_fonts", "glow"] }
+egui = { version = "0.29", optional = true }
+
+# --- Desktop only ---
+midir = { version = "0.10", optional = true }
+tracing-subscriber = { version = "0.3", optional = true }
+
+# --- Web only (wasm32) ---
+wasm-bindgen = { version = "0.2", optional = true }
+wasm-bindgen-futures = { version = "0.4", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  core:
+    name: Format · Clippy · Test (engine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy (engine, no system deps)
+        run: cargo clippy --no-default-features --all-targets -- -D warnings
+      - name: Test (engine)
+        run: cargo test --no-default-features
+
+  desktop:
+    name: Build desktop app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install audio/MIDI system libraries
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libudev-dev libjack-jackd2-dev
+      - name: Build
+        run: cargo build --all-targets
+
+  wasm:
+    name: Build WebAssembly demo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Build wasm lib
+        run: cargo build --lib --no-default-features --features web --target wasm32-unknown-unknown

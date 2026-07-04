@@ -1,0 +1,22 @@
+name = "Rock Screamer"
+drawbars = [
+    8,
+    8,
+    8,
+    8,
+    0,
+    0,
+    0,
+    0,
+    8,
+]
+vibrato = "off"
+leslie = "fast"
+overdrive = 0.699999988079071
+volume = 0.8500000238418579
+
+[percussion]
+on = false
+soft = false
+fast = true
+third = true
