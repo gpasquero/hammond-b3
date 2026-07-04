@@ -10,8 +10,8 @@ fn main() -> eframe::Result<()> {
 
     let native_options = eframe::NativeOptions {
         viewport: eframe::egui::ViewportBuilder::default()
-            .with_inner_size([920.0, 580.0])
-            .with_min_inner_size([720.0, 480.0])
+            .with_inner_size([1060.0, 660.0])
+            .with_min_inner_size([820.0, 560.0])
             .with_title("Hammond B3"),
         ..Default::default()
     };
