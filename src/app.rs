@@ -267,6 +267,26 @@ impl OrganApp {
         self.shared.set_patch(self.patch.clone());
     }
 
+    /// Browsers start the `AudioContext` suspended and only let it resume from a
+    /// user gesture. So on every pointer/key press we (lazily) create the stream
+    /// and re-`play()` it until sound actually flows. Harmless on native.
+    fn kick_audio(&mut self, ctx: &Context) {
+        let interacted = ctx.input(|i| {
+            i.pointer.any_pressed()
+                || i.events
+                    .iter()
+                    .any(|e| matches!(e, egui::Event::Key { pressed: true, .. }))
+        });
+        if !interacted {
+            return;
+        }
+        self.ensure_audio();
+        #[cfg(feature = "audio")]
+        if let Some(handle) = &self._audio {
+            handle.resume();
+        }
+    }
+
     fn note_on(&mut self, note: i32) {
         self.ensure_audio();
         if (0..=127).contains(&note) {
@@ -320,6 +340,7 @@ impl eframe::App for OrganApp {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         // Cap repaint at ~30 fps: keeps the web audio callback (main thread) smooth.
         ctx.request_repaint_after(std::time::Duration::from_millis(33));
+        self.kick_audio(ctx);
         self.process_keyboard(ctx);
 
         egui::TopBottomPanel::top("header")

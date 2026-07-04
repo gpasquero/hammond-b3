@@ -15,6 +15,16 @@ pub struct AudioHandle {
     pub channels: u16,
 }
 
+impl AudioHandle {
+    /// Re-`play()` the stream. On the web this resumes the browser's
+    /// `AudioContext`, which starts suspended and must be kicked from within a
+    /// user gesture — so the GUI calls this on every interaction until sound
+    /// flows. A no-op on native (the stream is already running).
+    pub fn resume(&self) {
+        let _ = self._stream.play();
+    }
+}
+
 /// Start audio output, rendering the organ driven by `shared`.
 pub fn start(shared: SharedState) -> Result<AudioHandle, String> {
     let host = cpal::default_host();
