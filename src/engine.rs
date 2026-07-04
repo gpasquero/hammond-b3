@@ -16,6 +16,35 @@ use crate::leslie::Leslie;
 use crate::preset::{Patch, VibratoMode};
 
 use std::f32::consts::TAU;
+use std::sync::OnceLock;
+
+/// Size of the shared sine wavetable (power of two for cheap masking).
+const SINE_SIZE: usize = 2048;
+
+/// A single sine period, computed once and shared by every tonewheel. Looking
+/// this up instead of calling `sin()` per wheel per sample is the key to smooth
+/// audio on the WebAssembly build, where the callback runs on the main thread.
+fn sine_table() -> &'static [f32; SINE_SIZE] {
+    static TABLE: OnceLock<[f32; SINE_SIZE]> = OnceLock::new();
+    TABLE.get_or_init(|| {
+        let mut t = [0.0f32; SINE_SIZE];
+        for (i, v) in t.iter_mut().enumerate() {
+            *v = (i as f32 / SINE_SIZE as f32 * TAU).sin();
+        }
+        t
+    })
+}
+
+/// Interpolated sine lookup for a phase in `0.0..1.0`.
+#[inline]
+fn sine(phase: f32) -> f32 {
+    let t = sine_table();
+    let x = phase * SINE_SIZE as f32;
+    let i = (x as usize) & (SINE_SIZE - 1);
+    let j = (i + 1) & (SINE_SIZE - 1);
+    let frac = x - (x as usize) as f32;
+    t[i] + (t[j] - t[i]) * frac
+}
 
 /// Semitone offset of each drawbar relative to the 8' unison, in classic order:
 /// `16', 5⅓', 8', 4', 2⅔', 2', 1⅗', 1⅓', 1'`.
@@ -83,7 +112,7 @@ impl WheelBank {
                 p -= 1.0;
             }
             self.phase[i] = p;
-            self.value[i] = (p * TAU).sin();
+            self.value[i] = sine(p);
         }
     }
 

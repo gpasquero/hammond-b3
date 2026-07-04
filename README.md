@@ -53,6 +53,8 @@ trunk serve            # open http://127.0.0.1:8080
 
 Every push to `main` also auto-deploys the demo to **GitHub Pages** via `.github/workflows/pages.yml`.
 
+> **🔈 Web audio notes.** Browsers keep audio **muted until you interact** — so the demo starts its audio engine on your **first key press / click**. On the web the audio callback shares the browser's main thread, so the engine uses a shared **sine wavetable** and the UI repaints at a capped ~30 fps to keep the sound smooth. If you ever hear crackling, close other heavy tabs — desktop (`cargo run`) always has the lowest, cleanest latency.
+
 ## 🎮 Controls
 
 | Action            | How |

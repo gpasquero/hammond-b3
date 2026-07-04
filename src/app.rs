@@ -169,7 +169,11 @@ impl OrganApp {
 
 impl eframe::App for OrganApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        ctx.request_repaint(); // animate meters / keep audio gestures responsive
+        // Repaint at ~30 fps: enough for the keyboard highlight while leaving
+        // the main thread free for the audio callback. On the web build the
+        // audio runs on the main thread, so an uncapped repaint rate is the
+        // main cause of choppy sound — throttling it keeps the output smooth.
+        ctx.request_repaint_after(std::time::Duration::from_millis(33));
         self.handle_computer_keyboard(ctx);
 
         egui::CentralPanel::default()
